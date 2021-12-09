@@ -259,3 +259,16 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+# log files
+log*.txt
+config.txt
+
+# database
+*.db
+*.sqbpro
+Database/Processed
+
+# actual container file
+remote_config.txt
+container
