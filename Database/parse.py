@@ -75,6 +75,7 @@ if __name__ == "__main__":
     with open(remote_config_path, "r") as f:
         lines = f.readlines()
         remote_config = lines[0]
+    i = 0
     while True:
         curr_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         text_files = get_text_files(remote_config)
@@ -87,3 +88,8 @@ if __name__ == "__main__":
         else:
             print(f"{curr_time}: found no new log files")
         time.sleep(60)
+        i += 1
+        if i % 60 == 0:
+            print("uploading db to remote backup")
+            subprocess.Popen(f"scp data.db {remote_config}:/root/", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+            
