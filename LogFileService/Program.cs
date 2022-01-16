@@ -1,16 +1,15 @@
+using LogFileService.BackgroundServices;
+using LogFileService.Controllers;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Start PingUtility
-foreach (var item in args)
-{
-    Console.WriteLine(item);
-}
-Console.WriteLine(args.Length);
-PingUtilityRunner.Run("facebook.com");
+// Setup Logs Folder
+Directory.CreateDirectory(LogFileController.LogFolder);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddHostedService<PingUtilityRunner>(s => new PingUtilityRunner("facebook.com"));
 
 var app = builder.Build();
 
