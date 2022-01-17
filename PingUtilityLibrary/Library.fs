@@ -89,6 +89,13 @@ module PingUtility =
             |> Array.choose id
             |> Array.append targets
 
+        let processingLocation = 
+            match logLocation with
+            | Some ll -> ll
+            | None ->  match location with 
+                       | l when l = defaultLocation -> defaultProcessingLocation
+                       | _ -> $"{Directory.GetCurrentDirectory()}/old-logs/log"
+
         while true do
             let startTime = DateTime.Now
             let result =
@@ -111,13 +118,6 @@ module PingUtility =
                 sw.Close()
                 sw.Dispose()
     
-                let processingLocation = match logLocation with
-                                         | Some ll -> ll
-                                         | None -> 
-                                             match location with 
-                                             | l when l = defaultLocation -> defaultProcessingLocation
-                                             | _ -> $"{Directory.GetCurrentDirectory()}/old-logs/log"
-    
                 File.Move(logFileName, $"{processingLocation}-{DateTimeOffset.Now.ToUnixTimeSeconds().ToString()}.txt")
                 File.Delete(logFileName)
                 sw <- File.AppendText(logFileName)
@@ -126,7 +126,7 @@ module PingUtility =
                 ()
     
             let elapsedTime = (int)((DateTime.Now - startTime).TotalMilliseconds)
-            Thread.Sleep(Math.Min(500 - elapsedTime, 250))
+            Thread.Sleep(500 - Math.Min(elapsedTime, 250))
     
     let ``ask for target`` () =
         printfn "Input target url: "
