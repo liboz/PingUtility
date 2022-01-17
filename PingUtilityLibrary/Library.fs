@@ -6,6 +6,8 @@ open System
 open System.IO
 open System.Threading
 open System.Globalization
+open System.Threading.Tasks
+
 
 module PingUtility =
     let logFileName = "log.txt"
@@ -21,39 +23,36 @@ module PingUtility =
     type IPInfo = { IPAddress: IPAddress; Name: string }
     
     let pingAsync (target: IPAddress) =
-        async {
+        task {
             let pingSender = new Ping()
             let targetReply = pingSender.SendPingAsync(target, 250)
     
-            let! result = Async.AwaitTask targetReply
+            let! result = targetReply
     
             return result
         }
-    
-    let pingAsyncCatch target = pingAsync target |> Async.Catch
-    
+        
     let pingAyncWithName target =
-        async {
-            let! result = pingAsyncCatch target.IPAddress
-    
-            return target, result
+        task {
+            try
+                let! result = pingAsync target.IPAddress
+                return target, Choice1Of2 result
+            with 
+            | ex -> 
+                return target, Choice2Of2 ex
         }
     
     let pingAll (targets: IPInfo []) (router: IPInfo option) =
-        let local =
-            { IPAddress = IPAddress.Loopback
-              Name = "localhost" }
-    
-        let all =
-            [| Some(local); router |] 
-            |> Array.choose id
-            |> Array.append targets
-    
-        all
-        |> Array.map pingAyncWithName
-        |> Async.Parallel
-        |> Async.RunSynchronously
-    
+        let tasks = targets |> Array.map pingAyncWithName
+        Task.WhenAll(tasks).Wait()
+        tasks |> Array.mapi(fun i task -> 
+            if task.IsCompletedSuccessfully then
+                task.Result
+            else
+                targets[i], Choice2Of2(Exception("TimedOut"))
+                )
+        
+
     let pingToText info (reply: Choice<PingReply, exn>) =
         match reply with
         | Choice1Of2 pingResponse ->
@@ -80,10 +79,20 @@ module PingUtility =
         let targets = [| target; google |]
         let mutable oneHourFromLastWriteTime = DateTime.Now.AddHours(1)
     
+
+        let local =
+            { IPAddress = IPAddress.Loopback
+              Name = "localhost" }
+    
+        let all =
+            [| Some(local); router |] 
+            |> Array.choose id
+            |> Array.append targets
+
         while true do
             let startTime = DateTime.Now
             let result =
-                pingAll targets router
+                pingAll all router
                 |> Array.map
                     (fun i ->
                         let info, reply = i
@@ -117,7 +126,7 @@ module PingUtility =
                 ()
     
             let elapsedTime = (int)((DateTime.Now - startTime).TotalMilliseconds)
-            Thread.Sleep(Math.Min(elapsedTime, 250))
+            Thread.Sleep(Math.Min(500 - elapsedTime, 250))
     
     let ``ask for target`` () =
         printfn "Input target url: "

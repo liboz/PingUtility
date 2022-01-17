@@ -6,9 +6,12 @@ namespace LogFileService.BackgroundServices
     public class PingUtilityRunner : BackgroundService
     {
         public string Target { get; }
-        public PingUtilityRunner(string target)
+        public string Location { get; }
+
+        public PingUtilityRunner(string target, string location)
         {
             Target = target;
+            Location = location;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -18,7 +21,7 @@ namespace LogFileService.BackgroundServices
                 using (File.Create(PingUtility.logFileName)) { };
                 PingUtility.pingAndLog(Target,
                                        PingUtility.noRouter,
-                                       PingUtility.defaultLocation,
+                                       Location,
                                        PingUtility.optionaLocationGenerator(LogFileController.LogFolder + "log"));
             });
         }
