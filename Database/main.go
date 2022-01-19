@@ -52,13 +52,14 @@ type LogData struct {
 
 func parseRemoteConfig() RemoteConfig {
 	if _, err := os.Stat(configPath); errors.Is(err, os.ErrNotExist) {
-		fmt.Println("Config file does not exist")
+		log.Println("Config file does not exist")
+		time.Sleep(60 * time.Second)
 		os.Exit(1)
 	}
 
 	jsonFile, err := os.Open(configPath)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		os.Exit(1)
 	}
 	defer jsonFile.Close()
@@ -66,7 +67,7 @@ func parseRemoteConfig() RemoteConfig {
 	byteValue, err := ioutil.ReadAll(jsonFile)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		os.Exit(1)
 	}
 
