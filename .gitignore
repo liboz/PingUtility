@@ -269,6 +269,8 @@ config.txt
 *.sqbpro
 Database/Processed
 
-# actual container file
-remote_config.txt
-container
+# config file
+remote_config.json
+
+# binary
+pingutility_parser 
