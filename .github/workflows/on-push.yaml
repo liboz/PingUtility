@@ -24,4 +24,4 @@ jobs:
           token: ${{ secrets.PAT }}
           event-type: deploy
           repository: ${{ secrets.KUBERNETES_REPO_NAME }}
-          client-payload: '{"repository": "${{ github.repository }}", "sha": "${{ github.sha }}", "image_name": "pingutility_database", "build_folder": "./Database", "deploy": "false"}'
+          client-payload: '{"repository": "${{ github.repository }}", "sha": "${{ github.sha }}", "image_name": "pingutility_database", "build_folder": "./Database"}'
