@@ -1,0 +1,27 @@
+name: Push Docker Image
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@master
+      - name: Repository Dispatch for .NET project
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.PAT }}
+          event-type: deploy
+          repository: ${{ secrets.KUBERNETES_REPO_NAME }}
+          client-payload: '{"repository": "${{ github.repository }}", "sha": "${{ github.sha }}", "image_name": "pingutility_server", "build_folder": "./LogFileService"}'
+      - name: Repository Dispatch for Golang Database Poller
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.PAT }}
+          event-type: deploy
+          repository: ${{ secrets.KUBERNETES_REPO_NAME }}
+          client-payload: '{"repository": "${{ github.repository }}", "sha": "${{ github.sha }}", "image_name": "pingutility_database", "build_folder": "./Database", "deploy": "false"}'
