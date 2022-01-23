@@ -263,6 +263,7 @@ __pycache__/
 # log files
 log*.txt
 config.txt
+old-logs/**
 
 # database
 *.db
@@ -274,3 +275,4 @@ remote_config.json
 
 # binary
 pingutility_parser 
+pingutility_pinger
