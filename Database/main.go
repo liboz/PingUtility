@@ -19,7 +19,7 @@ import (
 	_ "github.com/mattn/go-sqlite3" // Import go-sqlite3 library
 )
 
-const configPath = "./data/remote_config.json"
+const configPath = "./config/remote_config.json"
 const dbPath = "./data/data.db"
 const remoteLogsFolder = "./RemoteLogs/"
 const processedLogsFolder = "./Processed/"
