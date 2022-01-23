@@ -12,7 +12,6 @@ docker run -v $(pwd)/remote_config.json:/remote_config.json image_id
 
 ```
 {
-  "targets": [{ "name": "NAME", "url": "http://localhost:1234/logFile" }],
-  "backuplocation": "user@host"
+  "targets": [{ "name": "NAME", "url": "http://localhost:1234/logFile" }]
 }
 ```
