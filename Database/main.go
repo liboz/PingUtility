@@ -19,7 +19,8 @@ import (
 	_ "github.com/mattn/go-sqlite3" // Import go-sqlite3 library
 )
 
-const configPath = "./remote_config.json"
+const configPath = "./data/remote_config.json"
+const dbPath = "./data/data.db"
 const remoteLogsFolder = "./RemoteLogs/"
 const processedLogsFolder = "./Processed/"
 
@@ -188,7 +189,7 @@ func insertIntoSqlLite(db *sql.DB, logData LogData) {
 }
 
 func parseLogAndInsertIntoSqlLite(logFile LogFile, r *regexp.Regexp) {
-	db, _ := sql.Open("sqlite3", "./data.db")
+	db, _ := sql.Open("sqlite3", dbPath)
 	defer db.Close()
 
 	file, err := os.Open(logFile.LocalName)
@@ -266,7 +267,7 @@ func main() {
 		i += 1
 		if i%60 == 0 {
 			log.Printf("%s: uploading db to remote backup\n", currTime)
-			_, err := exec.Command("scp", "data.db", fmt.Sprintf("%s:/root/", remoteConfig.BackupLocation)).Output()
+			_, err := exec.Command("scp", dbPath, fmt.Sprintf("%s:/root/", remoteConfig.BackupLocation)).Output()
 			if err != nil {
 				fmt.Printf("err uploading to remote backup: %v\n", err)
 			}
