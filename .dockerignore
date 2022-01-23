@@ -27,9 +27,11 @@ README.md
 
 **/Processed/
 **/RemoteLogs/
+**/old-logs/
 
 *.db
 *.sqbpro
 
 pingutility_parser
+pingutility_pinger
 remote_config.json
