@@ -81,9 +81,15 @@ func parseRemoteConfig() RemoteConfig {
 func downloadTextFile(logFile LogFile) error {
 	res, err := http.Get(logFile.URL)
 	if err != nil {
+		fmt.Printf("error downloading file: %s\n", logFile)
 		return err
 	}
 	defer res.Body.Close()
+	if res.StatusCode != 200 {
+		errorString := fmt.Sprintf("Could not find file to download: %s\n", logFile)
+		fmt.Printf(errorString)
+		return errors.New(errorString)
+	}
 
 	out, err := os.Create(logFile.LocalName)
 	if err != nil {
@@ -102,13 +108,18 @@ func deleteTextFile(logFile LogFile) error {
 		return err
 	}
 
-	resp, err := client.Do(req)
+	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("error sending delete file request: %s\n", logFile)
 		return err
 	}
+	if res.StatusCode != 200 {
+		errorString := fmt.Sprintf("Could not find file to delete: %s\n", logFile)
+		fmt.Printf(errorString)
+		return errors.New(errorString)
+	}
 
-	defer resp.Body.Close()
+	defer res.Body.Close()
 	return err
 }
 
@@ -141,7 +152,7 @@ func getTextFiles(remoteConfig RemoteConfig) []LogFile {
 
 		for _, logFile := range logFilesOnServer {
 			fileData := LogFile{FileName: logFile,
-				URL:        target.URL + "/" + logFile,
+				URL:        target.URL + "?filename=" + logFile,
 				RemoteName: target.Name,
 				LocalName:  target.Name + "-" + logFile}
 			files = append(files, fileData)

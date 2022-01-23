@@ -78,6 +78,6 @@ func handleGetFilesEndpoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleRequests() {
-	http.HandleFunc("/getFiles", handleGetFilesEndpoint)
+	http.HandleFunc("/logFile", handleGetFilesEndpoint)
 	log.Fatal(http.ListenAndServe(":7832", nil))
 }
