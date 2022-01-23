@@ -59,7 +59,7 @@ func parseRemoteConfig() RemoteConfig {
 
 	jsonFile, err := os.Open(configPath)
 	if err != nil {
-		log.Println(err)
+		fmt.Printf("error opening remote config file: %v\n", err)
 		os.Exit(1)
 	}
 	defer jsonFile.Close()
@@ -67,7 +67,7 @@ func parseRemoteConfig() RemoteConfig {
 	byteValue, err := ioutil.ReadAll(jsonFile)
 
 	if err != nil {
-		log.Println(err)
+		fmt.Printf("error reading remove config file: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -118,7 +118,7 @@ func getTextFiles(remoteConfig RemoteConfig) []LogFile {
 	for _, target := range remoteConfig.Targets {
 		res, err := http.Get(target.URL)
 		if err != nil {
-			log.Println(err)
+			fmt.Printf("error doing http get request for %s: %v\n", target.URL, err)
 			continue
 		}
 
@@ -128,13 +128,15 @@ func getTextFiles(remoteConfig RemoteConfig) []LogFile {
 
 		body, err := ioutil.ReadAll(res.Body)
 		if err != nil {
-			log.Println(err)
+			fmt.Printf("error reading body for %s: %v\n", target.URL, err)
+			continue
 		}
 
 		logFilesOnServer := []string{}
 		err = json.Unmarshal(body, &logFilesOnServer)
 		if err != nil {
-			log.Println(err)
+			fmt.Printf("error parsing json for %s: %v\n", target.URL, err)
+			continue
 		}
 
 		for _, logFile := range logFilesOnServer {
@@ -255,7 +257,7 @@ func main() {
 			log.Printf("%s: uploading db to remote backup\n", currTime)
 			_, err := exec.Command("scp", "data.db", fmt.Sprintf("%s:/root/", remoteConfig.BackupLocation)).Output()
 			if err != nil {
-				log.Println(err)
+				fmt.Printf("err uploading to remote backup: %v\n", err)
 			}
 		}
 	}
