@@ -11,7 +11,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"regexp"
 	"strings"
 	"time"
@@ -29,8 +28,7 @@ const timeStampDataLayout = "2006-01-02 15:04:05.000"
 const hourMinuteLayout = "15:04"
 
 type RemoteConfig struct {
-	Targets        []Target `json:"targets"`
-	BackupLocation string   `json:"backuplocation"`
+	Targets []Target `json:"targets"`
 }
 
 type Target struct {
@@ -251,7 +249,6 @@ func main() {
 
 	remoteConfig := parseRemoteConfig()
 	fmt.Println(remoteConfig)
-	i := 0
 	for {
 		currTime := time.Now().Format("2006-01-02 15:04:05")
 		textFiles := getTextFiles(remoteConfig)
@@ -264,13 +261,5 @@ func main() {
 		}
 
 		time.Sleep(1 * time.Minute)
-		i += 1
-		if i%60 == 0 {
-			log.Printf("%s: uploading db to remote backup\n", currTime)
-			_, err := exec.Command("scp", dbPath, fmt.Sprintf("%s:/root/", remoteConfig.BackupLocation)).Output()
-			if err != nil {
-				fmt.Printf("err uploading to remote backup: %v\n", err)
-			}
-		}
 	}
 }
