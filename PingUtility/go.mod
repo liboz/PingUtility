@@ -1,4 +1,4 @@
-module liboz/pingutility_pinger
+module liboz/pingutility_server
 
 go 1.15
 

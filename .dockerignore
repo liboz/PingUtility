@@ -33,5 +33,5 @@ README.md
 *.sqbpro
 
 pingutility_parser
-pingutility_pinger
+pingutility_server
 remote_config.json
