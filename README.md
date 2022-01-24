@@ -7,3 +7,4 @@ Golang app that reads the log output into a database
 # TODO
 
 - [ ] Do DNS lookup more than just once at the beginning just in case
+- [ ] Database schema info

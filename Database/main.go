@@ -126,7 +126,10 @@ func getTextFiles(remoteConfig RemoteConfig) []LogFile {
 	files := []LogFile{}
 
 	for _, target := range remoteConfig.Targets {
-		res, err := http.Get(target.URL)
+		client := http.Client{
+			Timeout: 5 * time.Second,
+		}
+		res, err := client.Get(target.URL)
 		if err != nil {
 			fmt.Printf("error doing http get request for %s: %v\n", target.URL, err)
 			continue

@@ -105,6 +105,7 @@ func loopPinger(targets []string, location string) {
 	var targetInfos []TargetInfo
 
 	oneHourFromLastWriteTime := getOneHourFromNow()
+	entriesAddedSinceLastFileWrite := 0
 
 	for _, target := range targets {
 		ipaddr, err := net.ResolveIPAddr("ip", target)
@@ -146,9 +147,11 @@ func loopPinger(targets []string, location string) {
 			_, err = f.WriteString(logString)
 			if err != nil {
 				fmt.Printf("Error writing to file %v\n", err)
+			} else {
+				entriesAddedSinceLastFileWrite += 1
 			}
 		}
-		if time.Now().After(oneHourFromLastWriteTime) {
+		if entriesAddedSinceLastFileWrite > 20 || time.Now().After(oneHourFromLastWriteTime) {
 			f.Close()
 			newFileName := OLD_LOG_FILE_FOLDER + DEFAULT_OLD_LOG_BASENAME + strconv.FormatInt(time.Now().UnixMilli(), 10) + ".txt"
 			err := os.Rename(LOG_FILE_NAME, newFileName)
