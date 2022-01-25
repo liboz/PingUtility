@@ -164,6 +164,7 @@ func loopPinger(targets []string, location string) {
 				log.Fatalf("error moving file: %v\n", err)
 			}
 			oneHourFromLastWriteTime = getOneHourFromNow()
+			entriesAddedSinceLastFileWrite = 0
 		}
 
 		elapsedTime := time.Since(start)
