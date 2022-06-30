@@ -94,6 +94,35 @@ func getOneHourFromNow() time.Time {
 	return time.Now().Add(1 * time.Hour)
 }
 
+func resolveIPs(targets []string) ([]TargetInfo, error) {
+	var targetInfos []TargetInfo
+
+	for _, target := range targets {
+		ipaddr, err := net.ResolveIPAddr("ip", target)
+		if err != nil {
+			log.Printf("Cannot resolve ip: %v\n", err)
+			return targetInfos, err
+		}
+		targetInfo := TargetInfo{URL: target, IPAddress: ipaddr}
+		targetInfos = append(targetInfos, targetInfo)
+	}
+
+	var sb strings.Builder
+	for index, targetInfo := range targetInfos {
+		sb.WriteString("\"")
+		sb.WriteString(targetInfo.URL)
+		sb.WriteString(": ")
+		sb.WriteString(targetInfo.IPAddress.IP.String())
+		sb.WriteString("\"")
+		if index != len(targetInfos)-1 {
+			sb.WriteString("; ")
+		}
+	}
+	log.Printf("Resolved IPs to: [|%s\n|]", sb.String())
+
+	return targetInfos, nil
+}
+
 func loopPinger(targets []string, location string) {
 	f, err := os.OpenFile(LOG_FILE_NAME, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
@@ -107,13 +136,9 @@ func loopPinger(targets []string, location string) {
 	oneHourFromLastWriteTime := getOneHourFromNow()
 	entriesAddedSinceLastFileWrite := 0
 
-	for _, target := range targets {
-		ipaddr, err := net.ResolveIPAddr("ip", target)
-		if err != nil {
-			log.Fatalf("Cannot resolve ip: %v\n", err)
-		}
-		targetInfo := TargetInfo{URL: target, IPAddress: ipaddr}
-		targetInfos = append(targetInfos, targetInfo)
+	targetInfos, err = resolveIPs(targets)
+	if err != nil {
+		log.Fatalf("aborting because could not resolve ip address: %v", err)
 	}
 
 	for {
@@ -165,6 +190,14 @@ func loopPinger(targets []string, location string) {
 			}
 			oneHourFromLastWriteTime = getOneHourFromNow()
 			entriesAddedSinceLastFileWrite = 0
+
+			// Re-resolve IPs occasionally
+			newTargetInfos, err := resolveIPs(targets)
+			if err == nil {
+				targetInfos = newTargetInfos
+			} else {
+				log.Printf("Error in re-resolving IPs, continuing with same IPs for now: %v", err)
+			}
 		}
 
 		elapsedTime := time.Since(start)
