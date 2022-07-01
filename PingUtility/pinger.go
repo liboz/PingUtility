@@ -94,14 +94,14 @@ func getOneHourFromNow() time.Time {
 	return time.Now().Add(1 * time.Hour)
 }
 
-func resolveIPs(targets []string) ([]TargetInfo, error) {
+func resolveIPs(targets []string) ([]TargetInfo, string, error) {
 	var targetInfos []TargetInfo
 
 	for _, target := range targets {
 		ipaddr, err := net.ResolveIPAddr("ip", target)
 		if err != nil {
 			log.Printf("Cannot resolve ip: %v\n", err)
-			return targetInfos, err
+			return targetInfos, "", err
 		}
 		targetInfo := TargetInfo{URL: target, IPAddress: ipaddr}
 		targetInfos = append(targetInfos, targetInfo)
@@ -118,9 +118,8 @@ func resolveIPs(targets []string) ([]TargetInfo, error) {
 			sb.WriteString("; ")
 		}
 	}
-	log.Printf("Resolved IPs to: [|%s\n|]", sb.String())
 
-	return targetInfos, nil
+	return targetInfos, fmt.Sprintf("[|%s|]\n", sb.String()), nil
 }
 
 func loopPinger(targets []string, location string) {
@@ -136,10 +135,12 @@ func loopPinger(targets []string, location string) {
 	oneHourFromLastWriteTime := getOneHourFromNow()
 	entriesAddedSinceLastFileWrite := 0
 
-	targetInfos, err = resolveIPs(targets)
+	targetInfos, ipString, err := resolveIPs(targets)
+
 	if err != nil {
 		log.Fatalf("aborting because could not resolve ip address: %v", err)
 	}
+	log.Printf("Resolved IPs to: %s", ipString)
 
 	for {
 		start := time.Now()
@@ -192,8 +193,21 @@ func loopPinger(targets []string, location string) {
 			entriesAddedSinceLastFileWrite = 0
 
 			// Re-resolve IPs occasionally
-			newTargetInfos, err := resolveIPs(targets)
+			newTargetInfos, ipString, err := resolveIPs(targets)
 			if err == nil {
+				isSame := false
+				for i := range newTargetInfos {
+					if targetInfos[i].IPAddress != newTargetInfos[i].IPAddress {
+						isSame = true
+						break
+					}
+				}
+
+				if isSame {
+					log.Printf("IPs remain the same as previous: %s", ipString)
+				} else {
+					log.Printf("Newly resolved IPs are: %s", ipString)
+				}
 				targetInfos = newTargetInfos
 			} else {
 				log.Printf("Error in re-resolving IPs, continuing with same IPs for now: %v", err)
