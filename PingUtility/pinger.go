@@ -204,9 +204,10 @@ func loopPinger(targets []string, location string) {
 				}
 
 				if isSame {
-					log.Printf("IPs remain the same as previous: %s", ipString)
-				} else {
 					log.Printf("Newly resolved IPs are: %s", ipString)
+
+				} else {
+					log.Printf("IPs remain the same as previous: %s", ipString)
 				}
 				targetInfos = newTargetInfos
 			} else {
