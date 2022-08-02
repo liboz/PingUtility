@@ -15,7 +15,7 @@ func main() {
 		location = argsWithoutProg[0]
 	}
 	if len(argsWithoutProg) > 1 {
-		targets[0] = argsWithoutProg[1]
+		targets = append(targets, argsWithoutProg[1])
 	}
 
 	go handleRequests()
