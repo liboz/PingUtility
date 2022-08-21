@@ -52,7 +52,6 @@ type LogData struct {
 func parseRemoteConfig() RemoteConfig {
 	if _, err := os.Stat(configPath); errors.Is(err, os.ErrNotExist) {
 		log.Println("Config file does not exist")
-		time.Sleep(60 * time.Second)
 		os.Exit(1)
 	}
 

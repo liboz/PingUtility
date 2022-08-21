@@ -1,9 +1,10 @@
 FROM golang:1.17 AS builder
 
 WORKDIR /src
-COPY ./Database .
+COPY ./go.mod ./go.sum ./
 RUN go mod download
-RUN CGO_ENABLED=1 GOOS=linux go build -o /app -a -ldflags '-linkmode external -extldflags "-static"' .
+COPY . .
+RUN CGO_ENABLED=1 GOOS=linux go build -o /app -a -ldflags '-linkmode external -extldflags "-static"' ./Database
 
 FROM scratch
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
