@@ -5,7 +5,7 @@ COPY ./go.mod ./go.sum ./
 RUN go mod download
 COPY . .
 RUN mkdir /old-logs
-RUN CGO_ENABLED=1 GOOS=linux go build -o /app -a -ldflags '-linkmode external -extldflags "-static"' ./PingUtility
+RUN CGO_ENABLED=0 GOOS=linux go build -o /app -a -ldflags '-w -s' ./PingUtility
 
 FROM scratch
 COPY --from=builder /old-logs /old-logs
