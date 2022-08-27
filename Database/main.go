@@ -189,7 +189,10 @@ func insertIntoSqlLite(db *sql.DB, logData LogData) {
 }
 
 func parseLogAndInsertIntoSqlLite(logFile LogFile, r *regexp.Regexp) {
-	db, _ := sql.Open("sqlite3", dbPath)
+	db, err := sql.Open("sqlite3", dbPath)
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer db.Close()
 
 	file, err := os.Open(logFile.LocalName)
