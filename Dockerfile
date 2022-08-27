@@ -4,6 +4,7 @@ WORKDIR /src
 COPY ./go.mod ./go.sum ./
 RUN go mod download
 COPY . .
+# need CGO for go-sqlite3
 RUN CGO_ENABLED=1 GOOS=linux go build -o /app -a -ldflags '-w -s -linkmode external -extldflags -static' ./Database
 
 FROM scratch
