@@ -9,5 +9,5 @@ RUN CGO_ENABLED=1 GOOS=linux go build -o /app -a -ldflags '-w -s -linkmode exter
 
 FROM scratch
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /app /app
-ENTRYPOINT ["/app"]
+COPY --from=builder /app /pingutility-database
+ENTRYPOINT ["/pingutility-database"]
