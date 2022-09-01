@@ -123,7 +123,7 @@ func resolveIPs(targets []string) ([]TargetInfo, string, error) {
 }
 
 func loopPinger(targets []string, location string) {
-	f, err := os.OpenFile(LOG_FILE_NAME, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	logFile, err := os.OpenFile(LOG_FILE_NAME, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("error opening file: %v", err)
 	}
@@ -170,7 +170,7 @@ func loopPinger(targets []string, location string) {
 		fmt.Print(logString)
 
 		if shouldLog {
-			_, err = f.WriteString(logString)
+			_, err = logFile.WriteString(logString)
 			if err != nil {
 				fmt.Printf("Error writing to file %v\n", err)
 			} else {
@@ -178,14 +178,14 @@ func loopPinger(targets []string, location string) {
 			}
 		}
 		if entriesAddedSinceLastFileWrite > 20 || time.Now().After(oneHourFromLastWriteTime) {
-			f.Close()
+			logFile.Close()
 			newFileName := OLD_LOG_FILE_FOLDER + DEFAULT_OLD_LOG_BASENAME + strconv.FormatInt(time.Now().UnixMilli(), 10) + ".txt"
 			err := os.Rename(LOG_FILE_NAME, newFileName)
 			if err != nil {
 				log.Fatalf("error moving file: %v\n", err)
 			}
 
-			f, err = os.OpenFile(LOG_FILE_NAME, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)
+			logFile, err = os.OpenFile(LOG_FILE_NAME, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)
 			if err != nil {
 				log.Fatalf("error moving file: %v\n", err)
 			}
