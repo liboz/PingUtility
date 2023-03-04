@@ -276,3 +276,7 @@ remote_config.json
 # binary
 pingutility_parser 
 pingutility_server
+pingutility-database
+pingutility_server.exe
+PingUtility
+PingUtility.exe
