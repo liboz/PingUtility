@@ -140,7 +140,7 @@ func loopPinger(targets []string, location string) {
 	if err != nil {
 		log.Fatalf("aborting because could not resolve ip address: %v", err)
 	}
-	log.Printf("Resolved IPs to: %s", ipString)
+	log.Printf("Resolved IP addresses to: %s", ipString)
 
 	for {
 		start := time.Now()
@@ -195,23 +195,23 @@ func loopPinger(targets []string, location string) {
 			// Re-resolve IPs occasionally
 			newTargetInfos, ipString, err := resolveIPs(targets)
 			if err == nil {
-				isSame := false
+				ipAddressChanged := false
 				for i := range newTargetInfos {
 					if targetInfos[i].IPAddress != newTargetInfos[i].IPAddress {
-						isSame = true
+						ipAddressChanged = true
 						break
 					}
 				}
 
-				if isSame {
-					log.Printf("Newly resolved IPs are: %s", ipString)
+				if ipAddressChanged {
+					log.Printf("Newly resolved IP addresses are: %s", ipString)
 
 				} else {
-					log.Printf("IPs remain the same as previous: %s", ipString)
+					log.Printf("Resolved IP addresses remain the same: %s", ipString)
 				}
 				targetInfos = newTargetInfos
 			} else {
-				log.Printf("Error in re-resolving IPs, continuing with same IPs for now: %v", err)
+				log.Printf("Error in re-resolving IP addresses, continuing with same IP addresses for now: %v", err)
 			}
 		}
 
