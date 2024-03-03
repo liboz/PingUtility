@@ -2,9 +2,9 @@
 
 This project consists of a [client](PingUtility/) and a [database](Database/) server. The purpose is to collect information on network reliability.
 
-The Golang client collects pings from google.com, localhost, and a host of your choice. It then logs it into a file and serves it via a REST API.
+The Golang client collects pings from facebook.com, google.com, localhost, and an optional host of your choice. It then logs it into a file and serves it via a REST API.
 
-The Golang database server uses the client's REST APT to fetch all the logs from various clients and put that log output into a database for future processing.
+The Golang database server uses the client's REST APT generated via to fetch all the logs from various clients and put that log output into a database for future processing.
 
 # Database Schema
 
