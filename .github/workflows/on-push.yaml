@@ -12,14 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Repository Dispatch for Golang Client Pinger
-        uses: peter-evans/repository-dispatch@v1
+        uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.PAT }}
           event-type: deploy
           repository: ${{ secrets.KUBERNETES_REPO_NAME }}
           client-payload: '{"repository": "${{ github.repository }}", "sha": "${{ github.sha }}", "image_name": "pingutility-server", "dockerfile_location": "./Dockerfile_server"}'
       - name: Repository Dispatch for Golang Database Poller
-        uses: peter-evans/repository-dispatch@v1
+        uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.PAT }}
           event-type: deploy
