@@ -1,6 +1,7 @@
 module liboz/pingutility
 
-go 1.23
+go 1.24.0
+
 require (
 	github.com/go-ping/ping v1.1.0
 	github.com/mattn/go-sqlite3 v1.14.22
